@@ -1,18 +1,21 @@
 import pygame
 from tile import Tile
 from renderer import Renderer
+from loop import Loop
 
 def main():
-    display_size = 700
-    display = pygame.display.set_mode((700,700))
+    display_size = 1000
+    display = pygame.display.set_mode((1000,1000))
     
     pygame.init()
 
     white = (255,255,255)
     gray = (220,220,220)
 
-    map_size = 50
+    map_size = 100
     map = []
+    tile_size = display_size//map_size
+    print(tile_size)
 
     for i in range(map_size):
         map.append([])
@@ -20,16 +23,17 @@ def main():
             tile1 = Tile(i,j,white)
             map[i].append(tile1)
     
-    rnd = Renderer(display, display_size, map)
+    rnd = Renderer(display, display_size, map, tile_size)
     rnd.render_map()
     pygame.display.update()
 
     running = True
+    loop = Loop(map, tile_size)
 
     while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
+        loop.events()
+        rnd.render_map()
+        pygame.display.update()
     
 
 if __name__ == "__main__":
