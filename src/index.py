@@ -23,6 +23,10 @@ def main():
             tile1 = Tile(i,j,white)
             map[i].append(tile1)
     
+    for y in range(0, map_size):
+        for x in range(0, map_size):
+            Tile.connect_nodes(map[y][x], (y,x), map_size)
+    
     rnd = Renderer(display, display_size, map, tile_size)
     rnd.render_map()
     pygame.display.update()
