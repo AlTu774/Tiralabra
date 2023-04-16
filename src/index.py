@@ -15,7 +15,6 @@ def main():
     map_size = 100
     map = []
     tile_size = display_size//map_size
-    print(tile_size)
 
     for i in range(map_size):
         map.append([])
