@@ -38,7 +38,7 @@ def main():
         loop.events()
         if loop.end == True:
             A_star(loop.start_node, loop.end_node, map, rnd)
-            loop.end == False
+            loop.end = False
         rnd.render_map()
         pygame.display.update()
     
