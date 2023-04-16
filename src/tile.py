@@ -26,7 +26,7 @@ class Tile():
             c_node.nodes.append((node[0],node[1]-1))
         if node[0]-1 > 0:
             c_node.nodes.append((node[0]-1,node[1]))
-        if node[1]+1 < map_size:
+        if node[1]+1 < (map_size-1):
             c_node.nodes.append((node[0],node[1]+1))
-        if node[0]+1 < map_size:
-            c_node.nodes.append((node[0],node[1]+1))
+        if node[0]+1 < (map_size-1):
+            c_node.nodes.append((node[0]+1,node[1]))

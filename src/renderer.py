@@ -13,3 +13,9 @@ class Renderer():
         for y in range(0, self.map_size):
             for x in range(0, self.map_size):
                 pygame.draw.rect(self.display, self.map[y][x].color, (y*tile_size, x*tile_size, tile_size, tile_size))
+    
+    def vizualize_search(self, visited):
+        for node in visited:
+            node.color = (255,114,118)
+        self.render_map()
+        pygame.display.update()

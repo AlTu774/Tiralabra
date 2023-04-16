@@ -2,6 +2,7 @@ import pygame
 from tile import Tile
 from renderer import Renderer
 from loop import Loop
+from search import A_star
 
 def main():
     display_size = 1000
@@ -35,6 +36,9 @@ def main():
 
     while running:
         loop.events()
+        if loop.end == True:
+            A_star(loop.start_node, loop.end_node, map, rnd)
+            loop.end == False
         rnd.render_map()
         pygame.display.update()
     
