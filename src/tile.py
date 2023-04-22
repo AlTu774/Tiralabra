@@ -13,8 +13,14 @@ class Tile():
         self.y = y
         self.color = color
         self.nodes = []
+
+    def wall_check(node):
+        if node.color == (255,255,255):
+            return False
+        if node.color == (200,200,200):
+            return True
     
-    def connect_nodes(c_node, node, map_size):
+    def connect_nodes(c_node, node, map):
         """Connect's a node(tile) with it's surrounding nodes(tiles).
         
         Args:
@@ -22,11 +28,18 @@ class Tile():
         node: the node's coordinates in a map
         map_size: the size of the map
         """
+        map_size = len(map)
         if node[1]-1 > 0:
-            c_node.nodes.append((node[0],node[1]-1))
+            if not Tile.wall_check(map[node[0]][node[1]-1]):
+                c_node.nodes.append((node[0],node[1]-1))
         if node[0]-1 > 0:
-            c_node.nodes.append((node[0]-1,node[1]))
+            if not Tile.wall_check(map[node[0]-1][node[1]]):
+                c_node.nodes.append((node[0]-1,node[1]))
         if node[1]+1 < (map_size-1):
-            c_node.nodes.append((node[0],node[1]+1))
+            if not Tile.wall_check(map[node[0]][node[1]+1]):
+                c_node.nodes.append((node[0],node[1]+1))
         if node[0]+1 < (map_size-1):
-            c_node.nodes.append((node[0]+1,node[1]))
+            if not Tile.wall_check(map[node[0]+1][node[1]]):
+                c_node.nodes.append((node[0]+1,node[1]))
+    
+

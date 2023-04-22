@@ -23,10 +23,6 @@ def main():
             tile1 = Tile(i,j,white)
             map[i].append(tile1)
     
-    for y in range(0, map_size):
-        for x in range(0, map_size):
-            Tile.connect_nodes(map[y][x], (y,x), map_size)
-    
     rnd = Renderer(display, display_size, map, tile_size)
     rnd.render_map()
     pygame.display.update()
@@ -37,6 +33,9 @@ def main():
     while running:
         loop.events()
         if loop.end == True:
+            for y in range(0, map_size):
+                for x in range(0, map_size):
+                    Tile.connect_nodes(map[y][x], (y,x), map)
             A_star(loop.start_node, loop.end_node, map, rnd)
             loop.end = False
         rnd.render_map()
