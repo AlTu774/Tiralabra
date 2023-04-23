@@ -11,7 +11,7 @@ def main():
     pygame.init()
 
     white = (255,255,255)
-    gray = (220,220,220)
+
 
     map_size = 100
     map = []

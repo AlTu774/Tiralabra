@@ -47,5 +47,7 @@ def A_star(start, end, map, rnd):
                 g_list[neighbor.y][neighbor.x] = neighbor_g
                 if neighbor not in list.queue:
                     list.add_node((f,(neighbor.y,neighbor.x)))
-                    visited.append(neighbor)
+                    if neighbor.color != (200,200,200):
+                        visited.append(neighbor)
             rnd.vizualize_search(visited)
+    
