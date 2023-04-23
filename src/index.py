@@ -12,7 +12,6 @@ def main():
 
     white = (255,255,255)
 
-
     map_size = 100
     map = []
     tile_size = display_size//map_size
