@@ -2,7 +2,7 @@ import pygame
 from tile import Tile
 from renderer import Renderer
 from loop import Loop
-from search import A_star
+from search import A_star, IDA_star
 
 def main():
     display_size = 1000
@@ -21,6 +21,7 @@ def main():
         for j in range(map_size):
             tile1 = Tile(i,j,white)
             map[i].append(tile1)
+
     
     rnd = Renderer(display, display_size, map, tile_size)
     rnd.render_map()
@@ -28,6 +29,7 @@ def main():
 
     running = True
     loop = Loop(map, tile_size)
+    loop.switch = 0
 
     while running:
         loop.events()
@@ -35,7 +37,16 @@ def main():
             for y in range(0, map_size):
                 for x in range(0, map_size):
                     Tile.connect_nodes(map[y][x], (y,x), map)
-            A_star(loop.start_node, loop.end_node, map, rnd)
+            if loop.switch == 0:
+                r = A_star(loop.start_node, loop.end_node, map, rnd)
+            else:
+                r = IDA_star(loop.start_node, loop.end_node, map, rnd)
+            if r == "restart":
+                loop.clear_map()
+            elif r == 1:
+                loop.switch = 1
+            elif r == 0:
+                loop.switch = 0
             loop.end = False
         rnd.render_map()
         pygame.display.update()
