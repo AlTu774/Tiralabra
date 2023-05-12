@@ -1,6 +1,7 @@
 # A*/IDA* Search 
 ## User guide
-1. Install dependencies with command:
+1. Clone the repository
+2. Install dependencies with command:
 ```bash 
 poetry install
 ```
