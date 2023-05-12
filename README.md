@@ -8,6 +8,7 @@ poetry install
 ```bash 
 poetry run invoke start
 ```
+----
 Once the map loads you can draw walls on the map with right mouse click. Once you add the starting point and goal point on the map, the search algorithm will automatically start.
 ### Controls:
 Draw walls:
