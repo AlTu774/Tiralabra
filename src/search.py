@@ -1,28 +1,16 @@
 from math import sqrt
+from heapq import heappush, heappop
 import pygame
 
 class Priority_queue():
     def __init__(self):
         self.queue = []
-    
-    def add_node(self, node):
-        if self.queue == []:
-            self.queue.append(node)
-        else:
-            holder = []
-            while self.queue != []:
-                if self.queue[-1][0] > node[0]:
-                    self.queue.append(node)
-                    break
-                elif self.queue[-1][0] <= node[0]:
-                    holder.append(self.take_node())
-            if self.queue == []:
-                self.queue.append(node)
-            for n in reversed(holder):
-                self.queue.append(n)
+
+    def add_node(self,node):
+        heappush(self.queue, node)
     
     def take_node(self):
-        return self.queue.pop()
+        return heappop(self.queue)
 
 def A_star(start, end, map, rnd):
     visited = [start]
@@ -78,8 +66,8 @@ def A_star(start, end, map, rnd):
 
 def IDA_star(start, end, map, rnd):
     g_list = [[float('inf') for x in range(len(map))] for x in range(len(map))]
-    #h = sqrt((end.y-start.y)**2+(end.x-start.x)**2)
-    h = abs(end.y-start.y)+abs(end.x-start.x)
+    h = sqrt((end.y-start.y)**2+(end.x-start.x)**2)
+    #h = abs(end.y-start.y)+abs(end.x-start.x)
     limit = h
     path = [start]
 
@@ -106,8 +94,8 @@ def depth_search(path, map, g, end_node, limit, rnd):
             if event.key == pygame.K_x:
                 return 1
     node = path[-1]
-    #f = g + sqrt((end_node.y-node.y)**2+(end_node.x-node.x)**2)
-    f = g + abs(end_node.y-node.y)+abs(end_node.x-node.x)
+    f = g + sqrt((end_node.y-node.y)**2+(end_node.x-node.x)**2)
+    #f = g + abs(end_node.y-node.y)+abs(end_node.x-node.x)
     if f > limit:
         return f
     elif node == end_node:
@@ -152,26 +140,38 @@ def visualize_queue(queue, map, rnd):
         map[c[1]][c[0]].color = (240,240,255)
         rnd.render_map()
 
-def prioritize_neigbors1(node, end_node, g, map):
+def prioritize_neigbors(node, end_node, g, map):
     neighbors = []
-    for neighbor in node.nodes:
-        neighbor = map[neighbor[0]][neighbor[1]]
-        if (neighbor.y, neighbor.x) == (node.y+1, node.x+1) or (node.y-1, node.y-1) or (node.y-1, node.x+1) or (node.y+1, node.x-1):
-            neighbor_g = g + sqrt(2)
-        else:
-            neighbor_g = g + 1
-        #neighbor_f = neighbor_g + sqrt((end_node.y-neighbor.y)**2+(end_node.x-neighbor.x)**2)
-        neighbor_f = neighbor_g + abs(end_node.y-neighbor.y)+abs(end_node.x-neighbor.x)
-        neighbors.append((neighbor_f, neighbor))
-    neighbors.sort(key=lambda a: a[0])
+    if end_node.y - node.y < 0 and end_node.x - node.x < 0:
+        if (node.y-1,node.x-1) in node.nodes:
+            neighbors.append(map[node.y-1][node.x-1])
 
-    for x in range(0,len(neighbors)):
-        neighbors.insert(x, neighbors[x][1])
-        neighbors.pop(x+1)
+    elif end_node.y - node.y > 0 and end_node.x - node.x > 0:
+        if (node.y+1,node.x+1) in node.nodes:
+            neighbors.append(map[node.y+1][node.x+1])
 
+    elif end_node.y - node.y < 0 and end_node.x - node.x > 0:
+        if (node.y+1,node.x-1) in node.nodes:
+            neighbors.append(map[node.y+1][node.x-1])
+    
+    elif end_node.y - node.y > 0 and end_node.x - node.x < 0:
+        if (node.y+1,node.x+1) in node.nodes:
+            neighbors.append(map[node.y+1][node.x+1])
+    
+    remaining = []
+    print(neighbors)
+    for n_node in node.nodes:
+        neighbor = map[n_node[0]][n_node[1]]
+        if neighbor not in neighbors:
+            neighbor_h = g + sqrt((end_node.y-neighbor.y)**2+(end_node.x-neighbor.x)**2)
+            remaining.append((neighbor_h, neighbor))
+
+    remaining.sort(key=lambda a: a[0])
+    for n in remaining:
+        neighbors.append(n[1])
     return neighbors
 
-def prioritize_neigbors(node, end_node, g, map):
+def prioritize_neigbors1(node, end_node, g, map):
     neighbors = []
     if end_node.y - node.y < 0:
         if (node.y-1,node.x) in node.nodes:
