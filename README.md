@@ -1,8 +1,40 @@
 # A*/IDA* Search 
 ## User guide
-1. Install dependencies with command:
+1. Clone the repository
+2. Install dependencies with command:
 ```bash 
 poetry install
+```
+2. Start visualization with command:
+```bash 
+poetry run invoke start
+```
+----
+Once the map loads you can draw walls on the map with right mouse click. Once you add the starting point and goal point on the map, the search algorithm will automatically start.
+### Controls:
+Draw walls:
+```bash 
+right mouse click
+```
+Add starting point:
+```bash 
+left mouse click (first time)
+```
+Add end point:
+```bash 
+left mouse click (second time)
+```
+Stop the search:
+```bash 
+left mouse click
+```
+Reset  map:
+```bash 
+a
+```
+Switch algorithm (A*/IDA*):
+```bash 
+x
 ```
 
 ## Progress reports
