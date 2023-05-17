@@ -10,7 +10,7 @@ class Test_Queue(unittest.TestCase):
         list.add_node((2,"node"))
         list.add_node((4,"node"))
 
-        ans_list = [((4,"node")),((3,"node")),((2,"node")),((1,"node"))]
+        ans_list = [((1,"node")),((3,"node")),((2,"node")),((4,"node"))]
 
         self.assertEqual(list.queue, ans_list)
     

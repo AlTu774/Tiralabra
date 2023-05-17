@@ -34,7 +34,7 @@ def A_star(start, end, map, rnd):
         
         if node == end:
             shortest_path(path_map, start, node, map, rnd)
-            break
+            return path_map
         
         for neighbor in node.nodes:
             neighbor = map[neighbor[0]][neighbor[1]]
