@@ -34,13 +34,12 @@ def A_star(start, end, map, rnd):
         
         if node == end:
             shortest_path(path_map, start, node, map, rnd)
-            break
+            return path_map
         
         for neighbor in node.nodes:
             neighbor = map[neighbor[0]][neighbor[1]]
             if (neighbor.y, neighbor.x) == (node.y+1, node.x+1) or (node.y-1, node.y-1) or (node.y-1, node.x+1) or (node.y+1, node.x-1):
                 neighbor_g = g_list[node.y][node.x] + sqrt(2)
-            
             
             else:
                 neighbor_g = g_list[node.y][node.x] + 1
@@ -54,6 +53,7 @@ def A_star(start, end, map, rnd):
                     prev = (neighbor.y,neighbor.x)
                     if neighbor.color != (200,200,200):
                         visited.append(neighbor)
+
             rnd.visualize_search(visited)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -132,6 +132,7 @@ def shortest_path(path_map, start, end, map, rnd):
         node = path_map[node[0]][node[1]]
         map[node[0]][node[1]].color = (173,216,230)
         rnd.render_map()
+    return path_map
         
 
 def visualize_queue(queue, map, rnd):
@@ -159,7 +160,6 @@ def prioritize_neigbors(node, end_node, g, map):
             neighbors.append(map[node.y+1][node.x+1])
     
     remaining = []
-    print(neighbors)
     for n_node in node.nodes:
         neighbor = map[n_node[0]][n_node[1]]
         if neighbor not in neighbors:
