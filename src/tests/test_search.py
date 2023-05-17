@@ -31,3 +31,6 @@ class Test_Search(unittest.TestCase):
         correct = [m[20][30],m[21][31],m[22][32],m[23][33],m[24][34],m[22][32]]
 
         self.assertEqual(result, correct)
+
+if __name__ == '__main__':
+    unittest.main()
