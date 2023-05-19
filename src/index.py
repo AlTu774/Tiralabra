@@ -6,7 +6,7 @@ from search import A_star, IDA_star
 
 def main():
     display_size = 1000
-    display = pygame.display.set_mode((1000,1000))
+    display = pygame.display.set_mode((500,500))
     
     pygame.init()
 

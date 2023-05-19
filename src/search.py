@@ -102,9 +102,14 @@ def depth_search(path, map, g, end_node, limit, rnd):
         return "end"
     min_val = float('inf')
 
-    neighbors = prioritize_neigbors(node, end_node, g, map)
+    #neighbors = prioritize_neigbors(node, end_node, g, map)
+    neighbors = []
+    for node in node.nodes:
+        neighbors.append(map[node[0]][node[1]])
+    print(neighbors)
 
     for neighbor in neighbors:
+        print(neighbor)
         if neighbor not in path:
             path.append(neighbor)
             if (neighbor.y, neighbor.x) == ((node.y+1, node.x+1) or (node.y-1, node.y-1) or (node.y-1, node.x+1) or (node.y+1, node.x-1)):
