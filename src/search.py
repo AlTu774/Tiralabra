@@ -12,7 +12,7 @@ class Priority_queue():
     def take_node(self):
         return heappop(self.queue)
 
-def A_star(start, end, map, rnd):
+def A_star(start, end, map, rnd, ani, test):
     visited = [start]
     h = sqrt((end.y-start.y)**2+(end.x-start.x)**2)
     prev = 0
@@ -33,14 +33,13 @@ def A_star(start, end, map, rnd):
         node = map[node[0]][node[1]]
         
         if node == end:
-            shortest_path(path_map, start, node, map, rnd)
-            break
+            path = shortest_path(path_map, start, node, map, rnd)
+            return path
         
         for neighbor in node.nodes:
             neighbor = map[neighbor[0]][neighbor[1]]
             if (neighbor.y, neighbor.x) == (node.y+1, node.x+1) or (node.y-1, node.y-1) or (node.y-1, node.x+1) or (node.y+1, node.x-1):
                 neighbor_g = g_list[node.y][node.x] + sqrt(2)
-            
             
             else:
                 neighbor_g = g_list[node.y][node.x] + 1
@@ -54,27 +53,30 @@ def A_star(start, end, map, rnd):
                     prev = (neighbor.y,neighbor.x)
                     if neighbor.color != (200,200,200):
                         visited.append(neighbor)
-            rnd.visualize_search(visited)
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                if pygame.mouse.get_pressed()[2]:
-                    return "restart"
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_x:
-                        return 1
+            if ani:
+                rnd.visualize_search(visited)
 
-def IDA_star(start, end, map, rnd):
-    g_list = [[float('inf') for x in range(len(map))] for x in range(len(map))]
-    h = sqrt((end.y-start.y)**2+(end.x-start.x)**2)
-    #h = abs(end.y-start.y)+abs(end.x-start.x)
+            if not test:    
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                    if pygame.mouse.get_pressed()[2]:
+                        return "restart"
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_x:
+                            return 1
+
+def IDA_star(start, end, map, rnd, ani):
+    diff_d = min(abs(end.x - start.x),abs(end.y - start.y))*sqrt(2)
+    diff_h = abs(abs(end.x - start.x)-abs(end.y - start.y))
+    h = round(diff_d + diff_h, 3)
     limit = h
     path = [start]
 
     while True:
-        res = depth_search(path, map, 0, end, limit, rnd)
+        res = depth_search(path, map, 0, end, limit, rnd, ani)
         if res == "end":
-            #shortest_path(path, start, end, map, rnd)   
+            rnd.visualize_depth(path)
             break
         if res == "restart":
             return "restart"
@@ -83,8 +85,9 @@ def IDA_star(start, end, map, rnd):
         limit = res
 
 
-def depth_search(path, map, g, end_node, limit, rnd):
-    rnd.visualize_depth(path)
+def depth_search(path, map, g, end_node, limit, rnd, ani):
+    if ani:
+        rnd.visualize_depth(path)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -94,8 +97,10 @@ def depth_search(path, map, g, end_node, limit, rnd):
             if event.key == pygame.K_x:
                 return 1
     node = path[-1]
-    f = g + sqrt((end_node.y-node.y)**2+(end_node.x-node.x)**2)
-    #f = g + abs(end_node.y-node.y)+abs(end_node.x-node.x)
+    diff_d = min(abs(end_node.x - node.x),abs(end_node.y - node.y))*sqrt(2)
+    diff_h = abs(abs(end_node.x - node.x)-abs(end_node.y - node.y))
+    h = diff_d + diff_h
+    f = round(g + h, 3)
     if f > limit:
         return f
     elif node == end_node:
@@ -107,11 +112,12 @@ def depth_search(path, map, g, end_node, limit, rnd):
     for neighbor in neighbors:
         if neighbor not in path:
             path.append(neighbor)
-            if (neighbor.y, neighbor.x) == ((node.y+1, node.x+1) or (node.y-1, node.y-1) or (node.y-1, node.x+1) or (node.y+1, node.x-1)):
+            n = (neighbor.y, neighbor.x)
+            if n == (node.y+1, node.x+1) or n == (node.y-1, node.x-1) or n == (node.y-1, node.x+1) or n == (node.y+1, node.x-1):
                 neighbor_g = g + sqrt(2)
             else:
                 neighbor_g = g + 1
-            res = depth_search(path, map, neighbor_g, end_node, limit, rnd)
+            res = depth_search(path, map, neighbor_g, end_node, limit, rnd, ani)
             if res == "end":
                 return "end"
             if res == "restart":
@@ -122,79 +128,39 @@ def depth_search(path, map, g, end_node, limit, rnd):
     return min_val
 
 
-def JPS():
-    pass
-    
-
 def shortest_path(path_map, start, end, map, rnd):
     node = (end.y, end.x)
+    path = [node]
     while node != (start.y, start.x):
         node = path_map[node[0]][node[1]]
         map[node[0]][node[1]].color = (173,216,230)
-        rnd.render_map()
+        path.append(node)
+        if rnd != None:
+            rnd.render_map()
+    path.reverse()
+    return path
         
-
-def visualize_queue(queue, map, rnd):
-    for node in queue:
-        c = node[1]
-        map[c[1]][c[0]].color = (240,240,255)
-        rnd.render_map()
 
 def prioritize_neigbors(node, end_node, g, map):
     neighbors = []
-    if end_node.y - node.y < 0 and end_node.x - node.x < 0:
-        if (node.y-1,node.x-1) in node.nodes:
-            neighbors.append(map[node.y-1][node.x-1])
-
-    elif end_node.y - node.y > 0 and end_node.x - node.x > 0:
-        if (node.y+1,node.x+1) in node.nodes:
-            neighbors.append(map[node.y+1][node.x+1])
-
-    elif end_node.y - node.y < 0 and end_node.x - node.x > 0:
-        if (node.y+1,node.x-1) in node.nodes:
-            neighbors.append(map[node.y+1][node.x-1])
+    for i in range(-1,2):
+        for j in range(-1,2):
+            if i == 0 and j == 0:
+                continue
+            if node.x+i < 0 or node.x+i >= len(map):
+                continue
+            if node.y+j < 0 or node.y+j >= len(map):
+                continue
+            
+            diff_d = min(abs(end_node.x - (node.x+i)),abs(end_node.y - (node.y+j)))*sqrt(2)
+            diff_h = abs(abs(end_node.x - (node.x+i))-abs(end_node.y - (node.y+j)))
+            neighbor_h = diff_d + diff_h
+            #neighbor_h =sqrt((end_node.y-node.y)**2+(end_node.x-node.x)**2)
+            if (node.y+j, node.x+i) in node.nodes:
+                neighbors.append((neighbor_h, node.y+j,node.x+i))
     
-    elif end_node.y - node.y > 0 and end_node.x - node.x < 0:
-        if (node.y+1,node.x+1) in node.nodes:
-            neighbors.append(map[node.y+1][node.x+1])
-    
-    remaining = []
-    print(neighbors)
-    for n_node in node.nodes:
-        neighbor = map[n_node[0]][n_node[1]]
-        if neighbor not in neighbors:
-            neighbor_h = g + sqrt((end_node.y-neighbor.y)**2+(end_node.x-neighbor.x)**2)
-            remaining.append((neighbor_h, neighbor))
-
-    remaining.sort(key=lambda a: a[0])
-    for n in remaining:
-        neighbors.append(n[1])
-    return neighbors
-
-def prioritize_neigbors1(node, end_node, g, map):
-    neighbors = []
-    if end_node.y - node.y < 0:
-        if (node.y-1,node.x) in node.nodes:
-            neighbors.append(map[node.y-1][node.x])
-    elif end_node.y - node.y > 0:
-        if (node.y+1,node.x) in node.nodes:
-            neighbors.append(map[node.y+1][node.x])
-    
-    if end_node.x - node.x < 0:
-        if (node.y,node.x-1) in node.nodes:
-            neighbors.append(map[node.y][node.x-1])
-    elif end_node.x - node.x > 0:
-        if (node.y,node.x+1) in node.nodes:
-            neighbors.append(map[node.y][node.x+1])
-    
-    remaining = []
-    for n_node in node.nodes:
-        neighbor = map[n_node[0]][n_node[1]]
-        if neighbor not in neighbors:
-            neighbor_h = abs(end_node.y-neighbor.y)+abs(end_node.x-neighbor.x)
-            remaining.append((neighbor_h, neighbor))
-
-    remaining.sort(key=lambda a: a[0])
-    for n in remaining:
-        neighbors.append(n[1])
-    return neighbors
+    neighbors = sorted(neighbors)
+    neighbors_s = []
+    for n in neighbors:
+        neighbors_s.append(map[n[1]][n[2]])
+    return neighbors_s

@@ -38,9 +38,9 @@ def main():
                 for x in range(0, map_size):
                     Tile.connect_nodes(map[y][x], (y,x), map)
             if loop.switch == 0:
-                r = A_star(loop.start_node, loop.end_node, map, rnd)
+                r = A_star(loop.start_node, loop.end_node, map, rnd, loop.ani, False)
             else:
-                r = IDA_star(loop.start_node, loop.end_node, map, rnd)
+                r = IDA_star(loop.start_node, loop.end_node, map, rnd, loop.ani)
             if r == "restart":
                 loop.clear_map()
             elif r == 1:

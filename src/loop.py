@@ -1,5 +1,4 @@
 import pygame
-from search import A_star
 from tile import Tile
 
 class Loop():
@@ -13,6 +12,7 @@ class Loop():
         self.end_node = None
         self.down = False
         self.switch = 0
+        self.ani = True
     
     def events(self):
         for event in pygame.event.get():
@@ -25,8 +25,14 @@ class Loop():
                         self.switch = 1
                     else:
                         self.switch = 0
-                if event.key == pygame.K_a:
+                if event.key == pygame.K_c:
                     self.clear_map()
+                if event.key == pygame.K_a:
+                    if self.ani:
+                        self.ani = False
+                    else:
+                        self.ani = True
+
             
             if pygame.mouse.get_pressed()[2]:
                 pos = pygame.mouse.get_pos()
