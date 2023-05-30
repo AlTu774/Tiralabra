@@ -28,13 +28,17 @@ Stop the search:
 ```bash 
 left mouse click
 ```
-Reset  map:
+Clear  map:
 ```bash 
-a
+c
 ```
 Switch algorithm (A*/IDA*):
 ```bash 
 x
+```
+Turn animation on/off:
+```bash 
+a
 ```
 
 ## Progress reports
