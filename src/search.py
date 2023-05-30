@@ -66,10 +66,13 @@ def A_star(start, end, map, rnd, ani, test):
                         if event.key == pygame.K_x:
                             return 1
 
+
 def IDA_star(start, end, map, rnd, ani):
+    #print(end.y, end.x)
     diff_d = min(abs(end.x - start.x),abs(end.y - start.y))*sqrt(2)
     diff_h = abs(abs(end.x - start.x)-abs(end.y - start.y))
     h = round(diff_d + diff_h, 3)
+    #h = abs(end.y-start.y)+abs(end.x-start.x)
     limit = h
     path = [start]
 
@@ -97,11 +100,16 @@ def depth_search(path, map, g, end_node, limit, rnd, ani):
             if event.key == pygame.K_x:
                 return 1
     node = path[-1]
+    #print(abs(end_node.x - node.x),abs(end_node.y - node.y), "diagonal lenght")
     diff_d = min(abs(end_node.x - node.x),abs(end_node.y - node.y))*sqrt(2)
     diff_h = abs(abs(end_node.x - node.x)-abs(end_node.y - node.y))
     h = diff_d + diff_h
     f = round(g + h, 3)
+    #f = g + abs(end_node.y-node.y)+abs(end_node.x-node.x)
+    #print("diff_diag", diff_d,"diff_hori", diff_h, "G",g, "F", f)
+    #print("limit",limit, node.y, node.x)
     if f > limit:
+        #print("TOO BIG")
         return f
     elif node == end_node:
         return "end"
@@ -136,6 +144,7 @@ def shortest_path(path_map, start, end, map, rnd):
         map[node[0]][node[1]].color = (173,216,230)
         path.append(node)
         if rnd != None:
+            print("JIO")
             rnd.render_map()
     path.reverse()
     return path
@@ -162,5 +171,6 @@ def prioritize_neigbors(node, end_node, g, map):
     neighbors = sorted(neighbors)
     neighbors_s = []
     for n in neighbors:
+        #print(n[0], n[1], n[2])
         neighbors_s.append(map[n[1]][n[2]])
     return neighbors_s
