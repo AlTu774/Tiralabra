@@ -3,6 +3,13 @@ from heapq import heappush, heappop
 import pygame
 
 class Priority_queue():
+    """Class for using priority queue.
+    Attributes:
+    queue: stack which sorts to lowest value to be on top of the stack
+    
+    add_node(self, node): function that adds a new node to the stack
+    take_node(self, node): function that returns the lowest value and removes it from the stack
+    """
     def __init__(self):
         self.queue = []
 
@@ -13,6 +20,21 @@ class Priority_queue():
         return heappop(self.queue)
 
 def A_star(start, end, map, rnd, ani, test):
+    """A* function.
+    Args:
+    start: starting point on map, tile
+    end: goal point on map, tile
+    map: matrix of map that contains tiles
+    rnd: renderer used for visualization
+    ani: if the search is animated or not, bool
+    test: if the search is used for testing or not, bool
+
+    Returns:
+    "dead end" if path was not found
+    "restart" if the search will be stopped
+    (path, lenght) tuple if the shortest path is found
+    1, if there is a switch to IDA* search
+    """
     visited = [start]
     h = sqrt((end.y-start.y)**2+(end.x-start.x)**2)
     prev = 0
@@ -34,11 +56,11 @@ def A_star(start, end, map, rnd, ani, test):
         
         if node == end:
             path = shortest_path(path_map, start, node, map, rnd)
-            return path
+            return (path, g_list[end.y][end.x])
         
         for neighbor in node.nodes:
             neighbor = map[neighbor[0]][neighbor[1]]
-            if (neighbor.y, neighbor.x) == (node.y+1, node.x+1) or (node.y-1, node.y-1) or (node.y-1, node.x+1) or (node.y+1, node.x-1):
+            if (neighbor.y, neighbor.x) == (node.y+1, node.x+1) or (neighbor.y, neighbor.x) == (node.y-1, node.x-1) or (neighbor.y, neighbor.x) == (node.y-1, node.x+1) or (neighbor.y, neighbor.x) == (node.y+1, node.x-1):
                 neighbor_g = g_list[node.y][node.x] + sqrt(2)
             
             else:
@@ -65,54 +87,80 @@ def A_star(start, end, map, rnd, ani, test):
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_x:
                             return 1
+    return "dead end"
 
 
-def IDA_star(start, end, map, rnd, ani):
-    #print(end.y, end.x)
+def IDA_star(start, end, map, rnd, ani, test):
+    """IDA* function.
+    Args:
+    start: starting point on map, tile
+    end: goal point on map, tile
+    map: matrix of map that contains tiles
+    rnd: renderer used for visualization
+    ani: if the search is animated or not, bool
+    test: if the search is used for testing or not, bool
+
+    Returns:
+    "dead end" if path was not found
+    "restart" if the search will be stopped
+    ("end", lenght) tuple if the shortest path is found
+    """
     diff_d = min(abs(end.x - start.x),abs(end.y - start.y))*sqrt(2)
     diff_h = abs(abs(end.x - start.x)-abs(end.y - start.y))
     h = round(diff_d + diff_h, 3)
-    #h = abs(end.y-start.y)+abs(end.x-start.x)
     limit = h
     path = [start]
 
     while True:
-        res = depth_search(path, map, 0, end, limit, rnd, ani)
-        if res == "end":
-            rnd.visualize_depth(path)
-            break
-        if res == "restart":
+        res = depth_search(path, map, 0, end, limit, rnd, ani, test)
+        if res[0] == "end":
+            if not test:
+                rnd.visualize_depth(path)
+            return res
+        if res[0] == "restart":
             return "restart"
-        if res == float('inf'):
-            break
-        limit = res
+        if res[0] == float('inf'):
+            return "dead end"
+        limit = res[0]
 
 
-def depth_search(path, map, g, end_node, limit, rnd, ani):
+def depth_search(path, map, g, end_node, limit, rnd, ani, test):
+    """depth search for IDA* algorithm.
+    Args:
+    path: list containing the current path algorithm is on
+    map: matrix of map that contains tiles
+    g: g value, lenght of path from starting node to current node, int
+    end_node: goal point on map, tile
+    limit: limit for f value, initially the shortest path from start to end if there are no walls, int
+    rnd: renderer used for visualization
+    ani: if the search is animated or not, bool
+    test: if the search is used for testing or not, bool
+    
+    Returns:
+    "restart" if the search will be stopped
+    ("end", lenght) tuple if the shortest path is found
+    1, if there is a switch to A* search
+    """
     if ani:
         rnd.visualize_depth(path)
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-        if pygame.mouse.get_pressed()[2]:
-            return "restart"
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_x:
-                return 1
+    if not test:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            if pygame.mouse.get_pressed()[2]:
+                return "restart"
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_x:
+                    return 1
     node = path[-1]
-    #print(abs(end_node.x - node.x),abs(end_node.y - node.y), "diagonal lenght")
     diff_d = min(abs(end_node.x - node.x),abs(end_node.y - node.y))*sqrt(2)
     diff_h = abs(abs(end_node.x - node.x)-abs(end_node.y - node.y))
     h = diff_d + diff_h
     f = round(g + h, 3)
-    #f = g + abs(end_node.y-node.y)+abs(end_node.x-node.x)
-    #print("diff_diag", diff_d,"diff_hori", diff_h, "G",g, "F", f)
-    #print("limit",limit, node.y, node.x)
     if f > limit:
-        #print("TOO BIG")
-        return f
+        return (f, g)
     elif node == end_node:
-        return "end"
+        return ("end", g)
     min_val = float('inf')
 
     neighbors = prioritize_neigbors(node, end_node, g, map)
@@ -125,15 +173,15 @@ def depth_search(path, map, g, end_node, limit, rnd, ani):
                 neighbor_g = g + sqrt(2)
             else:
                 neighbor_g = g + 1
-            res = depth_search(path, map, neighbor_g, end_node, limit, rnd, ani)
-            if res == "end":
-                return "end"
-            if res == "restart":
+            res = depth_search(path, map, neighbor_g, end_node, limit, rnd, ani, test)
+            if res[0] == "end":
+                return ("end", res[1])
+            if res[0] == "restart":
                 return "restart"
-            elif res < min_val:
-                min_val = res
+            elif res[0] < min_val:
+                min_val = res[0]
             path.pop()
-    return min_val
+    return (min_val,0)
 
 
 def shortest_path(path_map, start, end, map, rnd):
@@ -144,7 +192,6 @@ def shortest_path(path_map, start, end, map, rnd):
         map[node[0]][node[1]].color = (173,216,230)
         path.append(node)
         if rnd != None:
-            print("JIO")
             rnd.render_map()
     path.reverse()
     return path
@@ -164,13 +211,11 @@ def prioritize_neigbors(node, end_node, g, map):
             diff_d = min(abs(end_node.x - (node.x+i)),abs(end_node.y - (node.y+j)))*sqrt(2)
             diff_h = abs(abs(end_node.x - (node.x+i))-abs(end_node.y - (node.y+j)))
             neighbor_h = diff_d + diff_h
-            #neighbor_h =sqrt((end_node.y-node.y)**2+(end_node.x-node.x)**2)
             if (node.y+j, node.x+i) in node.nodes:
                 neighbors.append((neighbor_h, node.y+j,node.x+i))
     
     neighbors = sorted(neighbors)
     neighbors_s = []
     for n in neighbors:
-        #print(n[0], n[1], n[2])
         neighbors_s.append(map[n[1]][n[2]])
     return neighbors_s

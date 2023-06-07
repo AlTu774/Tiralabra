@@ -40,7 +40,12 @@ def main():
             if loop.switch == 0:
                 r = A_star(loop.start_node, loop.end_node, map, rnd, loop.ani, False)
             else:
-                r = IDA_star(loop.start_node, loop.end_node, map, rnd, loop.ani)
+                r = IDA_star(loop.start_node, loop.end_node, map, rnd, loop.ani, False)
+            if r == "dead end":
+                for row in map:
+                    for tile in row:
+                        if tile.color == (255,114,118):
+                            tile.color = (230,230,230)
             if r == "restart":
                 loop.clear_map()
             elif r == 1:
