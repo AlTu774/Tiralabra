@@ -15,6 +15,15 @@ class Tile():
         self.nodes = []
 
     def wall_check(node):
+        """Checks if given node is a wall or not.
+        
+        Args:
+        node: tile on the map
+        
+        Returns:
+        False, if the node's color indicates that it is a wall
+        True,  if the node's color indicates that it is an empty space
+        """
         if node.color == (255,255,255):
             return False
         if node.color == (200,200,200):

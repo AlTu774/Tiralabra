@@ -185,6 +185,15 @@ def depth_search(path, map, g, end_node, limit, rnd, ani, test):
 
 
 def shortest_path(path_map, start, end, map, rnd):
+    """Function that returns the shortest path on the map by tracing back fron end point.
+    
+    Args:
+    path_map: matrix the size of the map, index points to previous node from current node
+    start: starting tile
+    end: goal tile
+    map: matrix of map that contains tiles
+    renderer used for visualization
+    """
     node = (end.y, end.x)
     path = [node]
     while node != (start.y, start.x):
@@ -197,7 +206,16 @@ def shortest_path(path_map, start, end, map, rnd):
     return path
         
 
-def prioritize_neigbors(node, end_node, g, map):
+def prioritize_neigbors(node, end_node, map):
+    """Function that sorts the neighboring nodes in the order of best heurestic first.
+    
+    Args:
+    node: the node whose neighbors are sorted, tile
+    end_node: goal node, tile
+    map: matrix of map that contains tiles
+    
+    Return:
+    A list with the sorted neighboring nodes"""
     neighbors = []
     for i in range(-1,2):
         for j in range(-1,2):
