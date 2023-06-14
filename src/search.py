@@ -163,7 +163,7 @@ def depth_search(path, map, g, end_node, limit, rnd, ani, test):
         return ("end", g)
     min_val = float('inf')
 
-    neighbors = prioritize_neigbors(node, end_node, g, map)
+    neighbors = prioritize_neigbors(node, end_node, map)
 
     for neighbor in neighbors:
         if neighbor not in path:
