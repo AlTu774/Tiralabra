@@ -6,4 +6,4 @@ def start(ctx):
 
 @task
 def test(ctx):
-	ctx.run("poetry pytest src", pty=True)
+	ctx.run("pytest src", pty=True)
